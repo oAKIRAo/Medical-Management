@@ -13,6 +13,6 @@ public class Patient {
     private Long id;
     private String firstName;
     private String lastName;
-    private String CIN;
+    private String cin;
     private String phoneNumber;
 }
