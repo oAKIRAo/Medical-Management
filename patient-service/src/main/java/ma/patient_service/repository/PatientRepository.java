@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository<Patient, Long> {
     Optional<Patient> findByCin(String cin);
 
+    boolean existsByCin(String cin);
 }
