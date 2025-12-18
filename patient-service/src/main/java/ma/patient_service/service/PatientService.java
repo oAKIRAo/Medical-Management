@@ -5,11 +5,9 @@ import ma.patient_service.Model.Patient;
 import ma.patient_service.dto.PatientDTO;
 import ma.patient_service.mapper.PatientMapper;
 import ma.patient_service.repository.PatientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PatientService {

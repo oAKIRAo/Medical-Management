@@ -1,9 +1,14 @@
 package ma.api_gateway.Config;
 
+import ma.api_gateway.dto.DossierMedicalDTO;
+import ma.api_gateway.dto.MedecinDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/patient/details")
@@ -18,27 +23,29 @@ public class DossierMedicalProxyController {
     }
 
     @PostMapping("/{id}/add")
-    public ResponseEntity<?> addDossier(@PathVariable Long id, @RequestBody Object dossierDto) {
-        return restTemplate.postForEntity(dossierServiceUrl + "/" + id + "/add", dossierDto, Object.class);
+    public ResponseEntity<DossierMedicalDTO> addDossier(@PathVariable Long id, @RequestBody DossierMedicalDTO dossierDto) {
+        return restTemplate.postForEntity(dossierServiceUrl + "/" + id + "/add", dossierDto, DossierMedicalDTO.class);
     }
 
     @GetMapping("/{id}/")
-    public ResponseEntity<?> getAllDossiers(@PathVariable Long id) {
-        Object[] dossiers = restTemplate.getForObject(dossierServiceUrl + "/" + id + "/", Object[].class);
-        return ResponseEntity.ok(dossiers);
+    public ResponseEntity<List<DossierMedicalDTO>> getAllDossiers(@PathVariable Long id) {
+        DossierMedicalDTO[] dossiers = restTemplate.getForObject(dossierServiceUrl + "/" + id + "/", DossierMedicalDTO[].class);
+        assert dossiers != null;
+        List<DossierMedicalDTO> dossiersList = Arrays.asList(dossiers);
+        return ResponseEntity.ok(dossiersList);
     }
 
     @PatchMapping("/{idPatient}/update/{idDossier}")
-    public ResponseEntity<?> updateDossier(@PathVariable Long idPatient,
+    public ResponseEntity<DossierMedicalDTO> updateDossier(@PathVariable Long idPatient,
                                            @PathVariable Long idDossier,
-                                           @RequestBody Object dossierDto) {
+                                           @RequestBody DossierMedicalDTO dossierDto) {
 
-        restTemplate.patchForObject(
+       DossierMedicalDTO updated = restTemplate.patchForObject(
                 dossierServiceUrl + "/" + idPatient + "/update/" + idDossier,
                 dossierDto,
-                Object.class
+                DossierMedicalDTO.class
         );
-        return ResponseEntity.ok(dossierDto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{idPatient}/delete/{idDossier}")
