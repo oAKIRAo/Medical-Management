@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class Appointment {
     @Id
     @GeneratedValue
-    private int id;
+    private Long id;
     private LocalDate date;
     private String heure;
     @ManyToOne

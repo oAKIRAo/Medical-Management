@@ -24,6 +24,7 @@ public class PatientProxyController {
     public ResponseEntity<PatientDTO> addPatient(@RequestBody PatientDTO patient) {
         return restTemplate.postForEntity(patientServiceUrl + "/add", patient, PatientDTO.class);
     }
+
     @GetMapping("/")
     public ResponseEntity<List<PatientDTO>> getAllPatients() {
             PatientDTO[] patients = restTemplate.getForObject(patientServiceUrl + "/", PatientDTO[].class);
@@ -31,6 +32,12 @@ public class PatientProxyController {
         List<PatientDTO> patientList = Arrays.asList(patients);
         return ResponseEntity.ok(patientList);
         }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PatientDTO> getPatientById(@PathVariable("id") Long id) {
+        return restTemplate.getForEntity(patientServiceUrl + "/"+id, PatientDTO.class);
+    }
+
     @DeleteMapping("/delete/{id}")
     public void deletePatient(@PathVariable("id") Long id) {
         restTemplate.delete(patientServiceUrl + "/delete/{id}" , id);

@@ -26,6 +26,12 @@ public class PatientService {
                 .map(PatientMapper::toDTO)
                 .toList();
     }
+    //Afficher le Patient par ID
+    public PatientDTO getPatientsId(Long id) {
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException(id));
+        return PatientMapper.toDTO(patient);
+    }
     //chercher un patinet numero CIN
     public PatientDTO getPatientByCIN(String cin) {
         Patient patient = patientRepository.findByCin(cin)
