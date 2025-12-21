@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/login";
 import Appointments from "./pages/Appointments";
-
+import Tables from "./pages/tables";
+import PatientDetails from "./pages/PatientsDetails";
 function App() {
   const isLoggedIn = !!sessionStorage.getItem("username");
 
@@ -14,6 +15,14 @@ function App() {
           path="/appointments"
           element={isLoggedIn ? <Appointments /> : <Navigate to="/login" />}
         />
+        <Route
+          path="/tables"
+          element={isLoggedIn ? <Tables /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/tables/details/:id"
+          element={isLoggedIn ? <PatientDetails /> : <Navigate to="/login" />}
+         />
       </Routes>
     </BrowserRouter>
   );

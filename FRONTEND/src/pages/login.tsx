@@ -1,57 +1,56 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/login.css"; 
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      // Test avec fetch pour Basic Auth
-      const response = await fetch("http://localhost:8888/appointments/", {
-         method: "GET",
-         credentials: "include",
-         headers: {
-             "Authorization": `Basic ${btoa(`${username}:${password}`)}`,
-         },
-      });
-
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
 
       sessionStorage.setItem("username", username);
       sessionStorage.setItem("password", password);
 
-      navigate("/appointments");
-    } catch {
-      setError("Utilisateur ou mot de passe incorrect");
-    }
+      navigate("/tables");
+
   };
 
-  return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+   return (
+   <div className="login-container">
+    <form className="login-form" onSubmit={handleSubmit}>
+      <div className="flex-row">
+        <label className="lf--label" htmlFor="username">
+          👤
+        </label>
         <input
-          type="text"
+          id="username"
+          className="lf--input"
           placeholder="Username"
+          type="text"
           value={username}
           onChange={e => setUsername(e.target.value)}
         />
+      </div>
+
+      <div className="flex-row">
+        <label className="lf--label" htmlFor="password">
+          🔒
+        </label>
         <input
-          type="password"
+          id="password"
+          className="lf--input"
           placeholder="Password"
+          type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  );
-}
+      </div>
+      <input className="lf--submit" type="submit" value="LOGIN" />
+    </form>
+
+  </div>
+   );
+  }
