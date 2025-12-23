@@ -66,7 +66,11 @@ public class AppointmentService {
     public void deleteAppointmentsByPatient(Long patientId) {
         appointmentRepository.deleteByPatientId(patientId);
     }
-
+    //Supprimer un rdv selon le Medecin
+    @Transactional
+    public void deleteAppointmentsByMedecin(Long medecinId) {
+        appointmentRepository.deleteByMedecinId(medecinId);
+    }
     //Update appointment
     public AppointmentDTO updateAppointment(Long id, AppointmentDTO dto) {
         Appointment existing = appointmentRepository.findById(id)

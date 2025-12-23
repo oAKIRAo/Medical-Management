@@ -4,6 +4,7 @@ import ma.medecins_service.Model.Medecin;
 import ma.medecins_service.dto.MedecinDTO;
 import ma.medecins_service.exceptions.MedecinNotFound;
 import ma.medecins_service.mapper.MedecinMapper;
+import ma.medecins_service.repository.AppointmentRepository;
 import ma.medecins_service.repository.MedecinRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,13 @@ import java.util.List;
 public class MedecinService {
 
     private final MedecinRepository medecinRepository;
+    private final AppointmentService appointmentService;
+    private final AppointmentRepository appointmentRepository;
 
-    public MedecinService(MedecinRepository medecinRepository) {
+    public MedecinService(MedecinRepository medecinRepository, AppointmentService appointmentService, AppointmentRepository appointmentRepository) {
         this.medecinRepository = medecinRepository;
+        this.appointmentService = appointmentService;
+        this.appointmentRepository = appointmentRepository;
     }
     //Ajouter un medecin
     public MedecinDTO addMedecin(MedecinDTO dto) {
@@ -34,6 +39,9 @@ public class MedecinService {
     public void deleteMedecin(Long id) {
         if (!medecinRepository.existsById(id)) {
             throw new MedecinNotFound(id);
+        }
+        if (appointmentRepository.existsByMedecinId(id)) {
+            appointmentService.deleteAppointmentsByMedecin(id);
         }
         medecinRepository.deleteById(id);
     }
