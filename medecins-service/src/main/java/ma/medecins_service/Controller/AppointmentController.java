@@ -31,6 +31,10 @@ public class AppointmentController {
         List<AppointmentDTO> list = appointmentService.getAllAppointments();
         return ResponseEntity.ok(list);
     }
+    @DeleteMapping("/patient/{patientId}")
+    public void deleteAppointmentsByPatient(@PathVariable Long patientId) {
+        appointmentService.deleteAppointmentsByPatient(patientId);
+    }
 
     // Supprimer un rendez-vous
     @DeleteMapping("/delete/{id}")

@@ -1,5 +1,6 @@
 package ma.medecins_service.Service;
 
+import jakarta.transaction.Transactional;
 import ma.medecins_service.Feign.PatientFeignClient;
 import ma.medecins_service.Model.Appointment;
 import ma.medecins_service.Model.Medecin;
@@ -60,6 +61,12 @@ public class AppointmentService {
         }
         appointmentRepository.deleteById(id);
     }
+    //Supprimer un rdv selon le patient
+    @Transactional
+    public void deleteAppointmentsByPatient(Long patientId) {
+        appointmentRepository.deleteByPatientId(patientId);
+    }
+
     //Update appointment
     public AppointmentDTO updateAppointment(Long id, AppointmentDTO dto) {
         Appointment existing = appointmentRepository.findById(id)

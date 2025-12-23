@@ -3,6 +3,7 @@ package ma.patient_service.service;
 import ma.patient_service.exception.PatientNotFoundException;
 import ma.patient_service.Model.Patient;
 import ma.patient_service.dto.PatientDTO;
+import ma.patient_service.feign.AppointmentFeignClient;
 import ma.patient_service.mapper.PatientMapper;
 import ma.patient_service.repository.PatientRepository;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,11 @@ import java.util.List;
 @Service
 public class PatientService {
     private final PatientRepository  patientRepository;
-    public PatientService(PatientRepository patientRepository) {this.patientRepository = patientRepository;}
+    private final AppointmentFeignClient appointmentFeignClient;
+
+    public PatientService(PatientRepository patientRepository, AppointmentFeignClient appointmentFeignClient) {this.patientRepository = patientRepository;
+        this.appointmentFeignClient = appointmentFeignClient;
+    }
     //Ajouter un patient
     public PatientDTO savePatient(PatientDTO dto) {
         Patient patient = PatientMapper.toEntity(dto);
@@ -41,6 +46,7 @@ public class PatientService {
     //Supprimer Un patient
     public void DeletePatientById(Long id) {
         if(patientRepository.existsById(id)) {
+            appointmentFeignClient.deleteAppointmentsByPatient(id);
             patientRepository.deleteById(id);
         }
     }

@@ -326,7 +326,7 @@ const Appointments: React.FC = () => {
 
         <section className="card table-card">
           <div className="card-header">
-            <h2>Liste des Rendez-vous ({filteredAppointments.length})</h2>
+            <h2>Liste des Rendez-vous</h2>
           </div>
           <div className="table-wrapper">
             <table>
@@ -384,37 +384,27 @@ const Appointments: React.FC = () => {
 
             <div className="form-group" style={{ position: 'relative' }} ref={patientRef}>
               <label className="font-bold">Patient (CIN ou Nom) <span className="required">*</span></label>
-              <div style={{ position: 'relative' }}>
-                <input 
-                  type="text"
-                  className="custom-input"
-                  placeholder="Chercher par CIN ou nom..."
-                  value={patientInput}
-                  onChange={(e) => { 
-                    setPatientInput(e.target.value); 
-                    setShowPatientList(true);
-                    if (formData.patientId !== 0) {
-                      setFormData({...formData, patientId: 0});
-                    }
-                  }}
-                  onFocus={() => setShowPatientList(true)}
-                  style={{ paddingRight: formData.patientId !== 0 ? '2.5rem' : '1rem' }}
-                  required
-                />
-                {formData.patientId !== 0 && (
-                  <span style={{ 
-                    position: 'absolute', 
-                    right: '0.75rem', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    color: '#10b981',
-                    fontSize: '1.25rem',
-                    fontWeight: 'bold'
-                  }}>
-                    ✓
-                  </span>
-                )}
-              </div>
+              <input 
+                type="text"
+                className="custom-input"
+                placeholder="Chercher par CIN ou nom..."
+                value={patientInput}
+                onChange={(e) => { 
+                  setPatientInput(e.target.value); 
+                  setShowPatientList(true);
+                  // Réinitialiser l'ID si l'utilisateur modifie le texte
+                  if (formData.patientId !== 0) {
+                    setFormData({...formData, patientId: 0});
+                  }
+                }}
+                onFocus={() => setShowPatientList(true)}
+                required
+              />
+              {formData.patientId !== 0 && (
+                <small style={{ color: '#10b981', marginTop: '0.25rem', display: 'block' }}>
+                  ✓ Patient sélectionné (ID: {formData.patientId})
+                </small>
+              )}
               {showPatientList && patientInput && patientSuggestions.length > 0 && (
                 <ul className="custom-dropdown">
                   {patientSuggestions.map(p => (
@@ -432,37 +422,27 @@ const Appointments: React.FC = () => {
 
             <div className="form-group" style={{ position: 'relative', marginTop: '1rem' }} ref={medecinRef}>
               <label className="font-bold">Médecin <span className="required">*</span></label>
-              <div style={{ position: 'relative' }}>
-                <input 
-                  type="text"
-                  className="custom-input"
-                  placeholder="Chercher Dr..."
-                  value={medecinInput}
-                  onChange={(e) => { 
-                    setMedecinInput(e.target.value); 
-                    setShowMedecinList(true);
-                    if (formData.medecinId !== 0) {
-                      setFormData({...formData, medecinId: 0});
-                    }
-                  }}
-                  onFocus={() => setShowMedecinList(true)}
-                  style={{ paddingRight: formData.medecinId !== 0 ? '2.5rem' : '1rem' }}
-                  required
-                />
-                {formData.medecinId !== 0 && (
-                  <span style={{ 
-                    position: 'absolute', 
-                    right: '0.75rem', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    color: '#10b981',
-                    fontSize: '1.25rem',
-                    fontWeight: 'bold'
-                  }}>
-                    ✓
-                  </span>
-                )}
-              </div>
+              <input 
+                type="text"
+                className="custom-input"
+                placeholder="Chercher Dr..."
+                value={medecinInput}
+                onChange={(e) => { 
+                  setMedecinInput(e.target.value); 
+                  setShowMedecinList(true);
+                  // Réinitialiser l'ID si l'utilisateur modifie le texte
+                  if (formData.medecinId !== 0) {
+                    setFormData({...formData, medecinId: 0});
+                  }
+                }}
+                onFocus={() => setShowMedecinList(true)}
+                required
+              />
+              {formData.medecinId !== 0 && (
+                <small style={{ color: '#10b981', marginTop: '0.25rem', display: 'block' }}>
+                  ✓ Médecin sélectionné (ID: {formData.medecinId})
+                </small>
+              )}
               {showMedecinList && medecinInput && medecinSuggestions.length > 0 && (
                 <ul className="custom-dropdown">
                   {medecinSuggestions.map(m => (
