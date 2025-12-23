@@ -3,6 +3,7 @@ import Login from "./pages/login";
 import Appointments from "./pages/Appointments";
 import Tables from "./pages/tables";
 import PatientDetails from "./pages/PatientsDetails";
+import Analytics from "./pages/Analytics";
 function App() {
   const isLoggedIn = !!sessionStorage.getItem("username");
 
@@ -22,6 +23,10 @@ function App() {
         <Route
           path="/tables/details/:id"
           element={isLoggedIn ? <PatientDetails /> : <Navigate to="/login" />}
+         />
+        <Route
+          path="/analytics"
+          element={isLoggedIn ? <Analytics /> : <Navigate to="/login" />}
          />
       </Routes>
     </BrowserRouter>

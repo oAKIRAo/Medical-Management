@@ -41,4 +41,5 @@ public class PatientController {
     public PatientDTO updatePatient(@PathVariable Long id, @RequestBody PatientDTO p) {
         return patientService.updatePatient(id,p);
     }
+
 }

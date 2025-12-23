@@ -1,4 +1,4 @@
-package ma.api_gateway.Config;
+package ma.api_gateway.Proxy;
 
 import ma.api_gateway.dto.MedecinDTO;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/medecins")

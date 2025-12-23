@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaChartBar, FaTable, FaSignOutAlt,FaCalendarCheck } from 'react-icons/fa';
+import { FaChartBar, FaTable, FaSignOutAlt,FaCalendarAlt } from 'react-icons/fa';
 import '../styles/AdminSideBar.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ const Sidebar: React.FC = () => {
     <div className="sidebar">
       <h2 className="title">Admin</h2>
       <nav className="nav">
-        <a href="/admin/dashboard/analytics" className="link">
+        <a href="/analytics" className="link">
           <FaChartBar className="icon" />
           Analytics
         </a>
@@ -24,7 +24,7 @@ const Sidebar: React.FC = () => {
           Tables
         </a>
           <a href="/appointments" className="link">
-          <FaCalendarCheck className="icon" />
+          <FaCalendarAlt className="icon" />
           Appointments
         </a>
         <a onClick={handleLogout} className="link" style={{ cursor: 'pointer' }}>

@@ -1,4 +1,4 @@
-package ma.api_gateway.Config;
+package ma.api_gateway.Proxy;
 import ma.api_gateway.dto.AppointmentDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

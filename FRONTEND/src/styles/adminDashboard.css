@@ -390,4 +390,78 @@ tbody tr:last-child td {
   table {
     min-width: 480px;
   }
+  .custom-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 5px;
+    outline: none;
+}
+
+.custom-input:focus {
+    border-color: #9147ff;
+    box-shadow: 0 0 0 2px rgba(145, 71, 255, 0.1);
+}
+.suggestion-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    z-index: 1000;
+    max-height: 150px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.suggestion-list li {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion-list li:hover {
+    background-color: #f3f0ff;
+    color: #9147ff;
+}
+
+.suggestion-list li:last-child {
+    border-bottom: none;
+}
+.custom-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  z-index: 1000;
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 4px;
+  padding: 0;
+  list-style: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.custom-dropdown li {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.custom-dropdown li:hover {
+  background-color: #f3f0ff;
+  color: #9147ff;
+}
 }

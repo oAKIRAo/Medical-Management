@@ -1,0 +1,108 @@
+/* Analytics.css */
+
+.admin-container {
+    max-width: none !important;
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.stats-grid {
+    display: grid;
+    /* Force 4 colonnes sur les grands écrans */
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px;
+    margin-bottom: 30px;
+    width: 100% !important;
+}
+
+.stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    position: relative; /* Pour placer l'icône précisément */
+    min-height: 120px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Carte Patients (Fond Bleu foncé) */
+.stat-card.blue {
+    background: #1a3a5f;
+    color: white;
+}
+
+.stat-header span {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #64748b; /* Gris pour les titres des cartes blanches */
+}
+
+/* Texte spécifique pour la carte bleue */
+.stat-card.blue .stat-header span {
+    color: #cbd5e1;
+}
+
+.stat-number {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-top: auto; /* Aligne le chiffre en bas */
+    color: #1e293b; /* Chiffre bien noir sur fond blanc */
+    line-height: 1;
+}
+
+.stat-card.blue .stat-number {
+    color: white;
+}
+
+/* Positionnement de l'icône en haut à droite */
+.stat-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+}
+
+/* Couleurs des icônes pour les cartes blanches */
+.stat-icon.orange { color: #f97316; }
+.stat-icon.green { color: #22c55e; }
+.stat-icon.gold { color: #eab308; }
+
+/* Couleur icône carte bleue */
+.stat-card.blue .stat-icon {
+    color: white;
+}
+
+/* Conteneur du graphique */
+.chart-container-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    width: 100% !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+}
+
+.chart-container-card h2 {
+    font-size: 1.25rem;
+    color: #1e293b;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 650px) {
+    .stats-grid { grid-template-columns: 1fr !important; }
+}

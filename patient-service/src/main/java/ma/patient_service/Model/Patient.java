@@ -1,10 +1,9 @@
 package ma.patient_service.Model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -17,4 +16,6 @@ public class Patient {
     @Column(unique=true)
     private String cin;
     private String phoneNumber;
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DossierMedical> dossiersMedicaux;
 }

@@ -1,7 +1,6 @@
-package ma.api_gateway.Config;
+package ma.api_gateway.Proxy;
 
 import ma.api_gateway.dto.DossierMedicalDTO;
-import ma.api_gateway.dto.MedecinDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;

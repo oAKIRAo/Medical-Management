@@ -20,6 +20,11 @@ const Tables: React.FC = () => {
   const [patientSearch, setPatientSearch] = useState('');
   const [medecinSearch, setMedecinSearch] = useState('');
 
+  // États de pagination
+  const [currentPatientPage, setCurrentPatientPage] = useState(1);
+  const [currentMedecinPage, setCurrentMedecinPage] = useState(1);
+  const itemsPerPage = 5;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'patient' | 'medecin'>('patient');
   const [isEditing, setIsEditing] = useState(false);
@@ -57,6 +62,33 @@ const Tables: React.FC = () => {
       m.lastname.toLowerCase().includes(searchLower)
     );
   }, [medecins, medecinSearch]);
+
+  // Pagination des patients
+  const paginatedPatients = useMemo(() => {
+    const startIndex = (currentPatientPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredPatients.slice(startIndex, endIndex);
+  }, [filteredPatients, currentPatientPage]);
+
+  const totalPatientPages = Math.ceil(filteredPatients.length / itemsPerPage);
+
+  // Pagination des médecins
+  const paginatedMedecins = useMemo(() => {
+    const startIndex = (currentMedecinPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredMedecins.slice(startIndex, endIndex);
+  }, [filteredMedecins, currentMedecinPage]);
+
+  const totalMedecinPages = Math.ceil(filteredMedecins.length / itemsPerPage);
+
+  // Réinitialiser la page lors d'une recherche
+  useEffect(() => {
+    setCurrentPatientPage(1);
+  }, [patientSearch]);
+
+  useEffect(() => {
+    setCurrentMedecinPage(1);
+  }, [medecinSearch]);
 
   const refreshPatients = useCallback(async () => {
     const res = await fetch('http://localhost:8888/patients/', { headers });
@@ -101,6 +133,7 @@ const Tables: React.FC = () => {
   const openCreateModal = (type: 'patient' | 'medecin') => {
     setModalType(type);
     setIsEditing(false);
+    setMessage('');
     setFormData(type === 'patient' 
       ? { firstName: '', lastName: '', cin: '', phoneNumber: '' }
       : { matricule: '', firstname: '', lastname: '', specialty: '' }
@@ -111,6 +144,7 @@ const Tables: React.FC = () => {
   const openEditModal = (type: 'patient' | 'medecin', data: FormDataType) => {
     setModalType(type);
     setIsEditing(true);
+    setMessage('');
     setCurrentId(data.id || null);
     setFormData({ ...data });
     setIsModalOpen(true);
@@ -124,18 +158,41 @@ const Tables: React.FC = () => {
           headers 
         });
         if (res.ok) {
-          setMessage('Suppression réussie');
+          setMessage('✅ Suppression réussie');
           if (type === 'patients') await refreshPatients();
           else await refreshMedecins();
         }
       } catch {
-        setMessage('Erreur lors de la suppression');
+        setMessage('❌ Erreur lors de la suppression');
       }
     }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    if (modalType === 'patient') {
+      const cinExists = patients.some(p => 
+        p.cin.toLowerCase() === formData.cin?.toLowerCase() && 
+        (!isEditing || p.id !== currentId)
+      );
+      
+      if (cinExists) {
+        setMessage(`❌ Un patient avec le CIN "${formData.cin}" existe déjà !`);
+        return;
+      }
+    } else {
+      const matriculeExists = medecins.some(m => 
+        m.matricule.toLowerCase() === formData.matricule?.toLowerCase() && 
+        (!isEditing || m.id !== currentId)
+      );
+      
+      if (matriculeExists) {
+        setMessage(`❌ Un médecin avec le matricule "${formData.matricule}" existe déjà !`);
+        return;
+      }
+    }
+
     const endpoint = `http://localhost:8888/${modalType}s/${isEditing ? `update/${currentId}` : 'add'}`;
     const method = isEditing ? 'PATCH' : 'POST';
 
@@ -150,12 +207,61 @@ const Tables: React.FC = () => {
         setIsModalOpen(false);
         if (modalType === 'patient') await refreshPatients();
         else await refreshMedecins();
-        setMessage(`${modalType === 'patient' ? 'Patient' : 'Médecin'} enregistré avec succès !`);
+        setMessage(`✅ ${modalType === 'patient' ? 'Patient' : 'Médecin'} enregistré avec succès !`);
       }
     } catch {
-      setMessage("Erreur lors de l'enregistrement");
+      setMessage("❌ Erreur lors de l'enregistrement");
     }
   };
+
+  const PaginationControls = ({ 
+    currentPage, 
+    totalPages, 
+    onPageChange 
+  }: { 
+    currentPage: number; 
+    totalPages: number; 
+    onPageChange: (page: number) => void;
+  }) => (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      gap: '1rem', 
+      marginTop: '1rem',
+      padding: '1rem'
+    }}>
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="btn"
+        style={{
+          padding: '0.5rem 1rem',
+          cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+          opacity: currentPage === 1 ? 0.5 : 1
+        }}
+      >
+        ← Précédent
+      </button>
+      
+      <span style={{ fontSize: '1rem', fontWeight: '500' }}>
+        Page {currentPage} sur {totalPages || 1}
+      </span>
+      
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage >= totalPages}
+        className="btn"
+        style={{
+          padding: '0.5rem 1rem',
+          cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
+          opacity: currentPage >= totalPages ? 0.5 : 1
+        }}
+      >
+        Suivant →
+      </button>
+    </div>
+  );
 
   return (
     <div className="admin-dashboard-container">
@@ -170,9 +276,11 @@ const Tables: React.FC = () => {
         ) : (
           <>
             {/* Section Patients */}
-            <button className="btn btn-submit" onClick={() => openCreateModal('patient')} style={{ marginBottom: '1rem' }}>
-              + Add Patient
-            </button>
+            <div style={{ display: 'flex', marginBottom: '1rem' }}>
+              <button className="btn btn-submit" onClick={() => openCreateModal('patient')} style={{ width: 'auto' }}>
+                + Add Patient
+              </button>
+            </div>
             
             <input
               type="search"
@@ -193,7 +301,7 @@ const Tables: React.FC = () => {
                     <tr><th>Prénom</th><th>Nom</th><th>CIN</th><th>Téléphone</th><th>Actions</th></tr>
                   </thead>
                   <tbody>
-                    {filteredPatients.length > 0 ? filteredPatients.map(p => (
+                    {paginatedPatients.length > 0 ? paginatedPatients.map(p => (
                       <tr key={p.id}>
                         <td>{p.firstName}</td>
                         <td>{p.lastName}</td>
@@ -221,12 +329,21 @@ const Tables: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+              {filteredPatients.length > 0 && (
+                <PaginationControls
+                  currentPage={currentPatientPage}
+                  totalPages={totalPatientPages}
+                  onPageChange={setCurrentPatientPage}
+                />
+              )}
             </section>
 
             {/* Section Médecins */}
-            <button className="btn btn-submit" onClick={() => openCreateModal('medecin')} style={{ marginBottom: '1rem', marginTop: '2rem' }}>
-              + Add Medecin
-            </button>
+            <div style={{ display: 'flex', marginBottom: '1rem', marginTop: '2rem' }}>
+              <button className="btn btn-submit" onClick={() => openCreateModal('medecin')} style={{ width: 'auto' }}>
+                + Add Medecin
+              </button>
+            </div>
             
             <input
               type="search"
@@ -247,7 +364,7 @@ const Tables: React.FC = () => {
                     <tr><th>Matricule</th><th>Prénom</th><th>Nom</th><th>Spécialité</th><th>Actions</th></tr>
                   </thead>
                   <tbody>
-                    {filteredMedecins.length > 0 ? filteredMedecins.map(m => (
+                    {paginatedMedecins.length > 0 ? paginatedMedecins.map(m => (
                       <tr key={m.id}>
                         <td>{m.matricule}</td>
                         <td>{m.firstname}</td>
@@ -268,6 +385,13 @@ const Tables: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+              {filteredMedecins.length > 0 && (
+                <PaginationControls
+                  currentPage={currentMedecinPage}
+                  totalPages={totalMedecinPages}
+                  onPageChange={setCurrentMedecinPage}
+                />
+              )}
             </section>
           </>
         )}

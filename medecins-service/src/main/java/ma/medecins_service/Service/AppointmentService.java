@@ -107,7 +107,5 @@ public class AppointmentService {
         return updatedDto;
     }
 
-
-
 }
 

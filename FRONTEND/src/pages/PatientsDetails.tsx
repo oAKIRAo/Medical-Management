@@ -29,6 +29,10 @@ const PatientDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
 
+  // États de pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentDossierId, setCurrentDossierId] = useState<number | null>(null);
@@ -81,6 +85,15 @@ const PatientDetails: React.FC = () => {
     fetchPatient();
     fetchDossiers();
   }, [id, headers, fetchDossiers]);
+
+  // Pagination
+  const paginatedDossiers = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return dossiers.slice(startIndex, endIndex);
+  }, [dossiers, currentPage]);
+
+  const totalPages = Math.ceil(dossiers.length / itemsPerPage);
 
   const openCreateModal = () => {
     setIsEditing(false);
@@ -141,18 +154,51 @@ const PatientDetails: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const PaginationControls = () => (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      gap: '1rem', 
+      marginTop: '1rem',
+      padding: '1rem'
+    }}>
+      <button
+        onClick={() => setCurrentPage(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="btn"
+        style={{
+          padding: '0.5rem 1rem',
+          cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+          opacity: currentPage === 1 ? 0.5 : 1
+        }}
+      >
+        ← Précédent
+      </button>
+      
+      <span style={{ fontSize: '1rem', fontWeight: '500' }}>
+        Page {currentPage} sur {totalPages || 1}
+      </span>
+      
+      <button
+        onClick={() => setCurrentPage(currentPage + 1)}
+        disabled={currentPage >= totalPages}
+        className="btn"
+        style={{
+          padding: '0.5rem 1rem',
+          cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
+          opacity: currentPage >= totalPages ? 0.5 : 1
+        }}
+      >
+        Suivant →
+      </button>
+    </div>
+  );
+
   return (
     <div className="admin-dashboard-container">
       <Sidebar />
       <div className="admin-container">
-        <button 
-          onClick={() => navigate('/tables')} 
-          className="btn btn-cancel"
-          style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          ← Retour aux patients
-        </button>
-
         {patient && (
           <div className="patient-hero-card">
             <div className="patient-avatar-wrapper">
@@ -195,7 +241,7 @@ const PatientDetails: React.FC = () => {
 
         <section className="card table-card">
           <div className="card-header">
-            <h2>Dossiers Médicaux</h2>
+            <h2>Dossiers Médicaux </h2>
           </div>
 
           <div className="table-wrapper">
@@ -210,8 +256,8 @@ const PatientDetails: React.FC = () => {
               <tbody>
                 {loading ? (
                   <tr><td colSpan={3} className="loading">Chargement...</td></tr>
-                ) : dossiers.length > 0 ? (
-                  dossiers.map(dossier => (
+                ) : paginatedDossiers.length > 0 ? (
+                  paginatedDossiers.map(dossier => (
                     <tr key={dossier.id}>
                       <td>
                         <div style={{ maxWidth: '500px', whiteSpace: 'normal', lineHeight: '1.5' }}>
@@ -247,47 +293,55 @@ const PatientDetails: React.FC = () => {
               </tbody>
             </table>
           </div>
+          {dossiers.length > 0 && <PaginationControls />}
         </section>
+        
+        <button 
+          onClick={() => navigate('/tables')} 
+          className="btn btn-cancel"
+          style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', width: 'fit-content'}}
+        >
+          ← Retour aux patients
+        </button>
 
-        {/* MODAL UNIFIÉ AVEC "TABLES" */}
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-            <h2 style={{ marginBottom: '1.5rem' }}>
-               {isEditing ? 'Modifier le dossier' : 'Ajouter un dossier'}
-            </h2>
-            <form onSubmit={handleSubmit} className="form">
-              <div className="form-group">
-                <label className="font-bold">Logs / Notes médicales <span className="required">*</span></label>
-                <textarea
-                  name="logs"
-                  value={formData.logs}
-                  onChange={handleChange}
-                  placeholder="Saisissez les observations cliniques..."
-                  className="custom-textarea"
-                  rows={6}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label className="font-bold">Allergies <span className="required">*</span></label>
-                <textarea
-                  name="allergies"
-                  value={formData.allergies}
-                  onChange={handleChange}
-                  placeholder="Liste des allergies (ou 'Aucune')..."
-                  className="custom-textarea"
-                  rows={3}
-                  required
-                />
-              </div>
-              <div className="form-actions">
-                <button type="button" className="btn btn-cancel" onClick={() => setIsModalOpen(false)}>
-                  Annuler
-                </button>
-                <button type="submit" className="btn btn-submit">
-                  {isEditing ? 'Mettre à jour' : 'Enregistrer'}
-                </button>
-              </div>
-            </form>
+          <h2 style={{ marginBottom: '1.5rem' }}>
+            {isEditing ? 'Modifier le dossier' : 'Ajouter un dossier'}
+          </h2>
+          <form onSubmit={handleSubmit} className="form">
+            <div className="form-group">
+              <label className="font-bold">Logs / Notes médicales <span className="required">*</span></label>
+              <textarea
+                name="logs"
+                value={formData.logs}
+                onChange={handleChange}
+                placeholder="Saisissez les observations cliniques..."
+                className="custom-textarea"
+                rows={6}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="font-bold">Allergies <span className="required">*</span></label>
+              <textarea
+                name="allergies"
+                value={formData.allergies}
+                onChange={handleChange}
+                placeholder="Liste des allergies (ou 'Aucune')..."
+                className="custom-textarea"
+                rows={3}
+                required
+              />
+            </div>
+            <div className="form-actions">
+              <button type="button" className="btn btn-cancel" onClick={() => setIsModalOpen(false)}>
+                Annuler
+              </button>
+              <button type="submit" className="btn btn-submit">
+                {isEditing ? 'Mettre à jour' : 'Enregistrer'}
+              </button>
+            </div>
+          </form>
         </Modal>
       </div>
     </div>
