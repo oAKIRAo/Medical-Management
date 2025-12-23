@@ -100,10 +100,24 @@ const Appointments: React.FC = () => {
     if (!search.trim()) return appointments;
     
     const s = search.toLowerCase().trim();
+    const searchTerm = s.replace(/^dr\.?\s*/i, ''); // Enlève "Dr." de la recherche
     
     return appointments.filter(a => {
       // Recherche dans la date
       if (a.date.includes(s)) return true;
+      
+      // Recherche dans les infos médecin via medecinId
+      const medecin = medecins.find(m => m.id === a.medecinId);
+      if (medecin) {
+        const medecinName = medecin.lastname.toLowerCase();
+        if (medecinName.includes(searchTerm) || medecinName.includes(s)) return true;
+      }
+      
+      // Recherche dans les infos médecin via champ existant
+      if (a.medecinNom) {
+        const medecinNom = a.medecinNom.toLowerCase();
+        if (medecinNom.includes(searchTerm) || medecinNom.includes(s)) return true;
+      }
       
       // Recherche dans les infos patient via patientId
       const patient = patients.find(p => p.id === a.patientId);
@@ -116,22 +130,6 @@ const Appointments: React.FC = () => {
       // Recherche dans les infos patient via champs existants
       if (a.patientFirstName?.toLowerCase().includes(s)) return true;
       if (a.patientLastName?.toLowerCase().includes(s)) return true;
-      
-      // Recherche dans les infos médecin via medecinId
-      const medecin = medecins.find(m => m.id === a.medecinId);
-      if (medecin) {
-        // Recherche avec ou sans "Dr."
-        const medecinName = medecin.lastname.toLowerCase();
-        const searchTerm = s.replace(/^dr\.?\s*/i, ''); // Enlève "Dr." de la recherche
-        if (medecinName.includes(searchTerm) || medecinName.includes(s)) return true;
-      }
-      
-      // Recherche dans les infos médecin via champ existant
-      if (a.medecinNom) {
-        const medecinNom = a.medecinNom.toLowerCase();
-        const searchTerm = s.replace(/^dr\.?\s*/i, ''); // Enlève "Dr." de la recherche
-        if (medecinNom.includes(searchTerm) || medecinNom.includes(s)) return true;
-      }
       
       return false;
     });
@@ -155,9 +153,10 @@ const Appointments: React.FC = () => {
     `${p.firstName} ${p.lastName}`.toLowerCase().includes(patientInput.toLowerCase())
   );
 
-  const medecinSuggestions = medecins.filter(m => 
-    m.lastname.toLowerCase().includes(medecinInput.toLowerCase())
-  );
+  const medecinSuggestions = medecins.filter(m => {
+    const searchValue = medecinInput.toLowerCase().replace(/^dr\.?\s*/i, '');
+    return m.lastname.toLowerCase().includes(searchValue);
+  });
 
   const openCreateModal = () => {
     setIsEditing(false);
@@ -189,6 +188,20 @@ const Appointments: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    // Validation des données
+    if (!formData.patientId || formData.patientId === 0) {
+      setMessage("❌ Veuillez sélectionner un patient dans la liste");
+      return;
+    }
+    
+    if (!formData.medecinId || formData.medecinId === 0) {
+      setMessage("❌ Veuillez sélectionner un médecin dans la liste");
+      return;
+    }
+    
+    console.log("Données envoyées:", formData); // Pour déboguer
+    
     const endpoint = isEditing 
       ? `http://localhost:8888/appointments/update/${currentId}`
       : `http://localhost:8888/appointments/create`;
@@ -200,13 +213,19 @@ const Appointments: React.FC = () => {
         headers,
         body: JSON.stringify(formData),
       });
+      
       if (res.ok) {
         setIsModalOpen(false);
         fetchData();
         setMessage(`✅ Rendez-vous ${isEditing ? 'mis à jour' : 'créé'} avec succès`);
         setTimeout(() => setMessage(''), 3000);
+      } else {
+        const errorText = await res.text();
+        console.error("Erreur serveur:", errorText);
+        setMessage("❌ Erreur: " + (errorText || "Médecin ou patient introuvable"));
       }
-    } catch {
+    } catch (error) {
+      console.error("Erreur:", error);
       setMessage("❌ Erreur lors de l'enregistrement");
     }
   };
@@ -307,7 +326,7 @@ const Appointments: React.FC = () => {
 
         <section className="card table-card">
           <div className="card-header">
-            <h2>Liste des Rendez-vous</h2>
+            <h2>Liste des Rendez-vous ({filteredAppointments.length})</h2>
           </div>
           <div className="table-wrapper">
             <table>
@@ -365,15 +384,37 @@ const Appointments: React.FC = () => {
 
             <div className="form-group" style={{ position: 'relative' }} ref={patientRef}>
               <label className="font-bold">Patient (CIN ou Nom) <span className="required">*</span></label>
-              <input 
-                type="text"
-                className="custom-input"
-                placeholder="Chercher par CIN ou nom..."
-                value={patientInput}
-                onChange={(e) => { setPatientInput(e.target.value); setShowPatientList(true); }}
-                onFocus={() => setShowPatientList(true)}
-                required
-              />
+              <div style={{ position: 'relative' }}>
+                <input 
+                  type="text"
+                  className="custom-input"
+                  placeholder="Chercher par CIN ou nom..."
+                  value={patientInput}
+                  onChange={(e) => { 
+                    setPatientInput(e.target.value); 
+                    setShowPatientList(true);
+                    if (formData.patientId !== 0) {
+                      setFormData({...formData, patientId: 0});
+                    }
+                  }}
+                  onFocus={() => setShowPatientList(true)}
+                  style={{ paddingRight: formData.patientId !== 0 ? '2.5rem' : '1rem' }}
+                  required
+                />
+                {formData.patientId !== 0 && (
+                  <span style={{ 
+                    position: 'absolute', 
+                    right: '0.75rem', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    color: '#10b981',
+                    fontSize: '1.25rem',
+                    fontWeight: 'bold'
+                  }}>
+                    ✓
+                  </span>
+                )}
+              </div>
               {showPatientList && patientInput && patientSuggestions.length > 0 && (
                 <ul className="custom-dropdown">
                   {patientSuggestions.map(p => (
@@ -391,15 +432,37 @@ const Appointments: React.FC = () => {
 
             <div className="form-group" style={{ position: 'relative', marginTop: '1rem' }} ref={medecinRef}>
               <label className="font-bold">Médecin <span className="required">*</span></label>
-              <input 
-                type="text"
-                className="custom-input"
-                placeholder="Chercher Dr..."
-                value={medecinInput}
-                onChange={(e) => { setMedecinInput(e.target.value); setShowMedecinList(true); }}
-                onFocus={() => setShowMedecinList(true)}
-                required
-              />
+              <div style={{ position: 'relative' }}>
+                <input 
+                  type="text"
+                  className="custom-input"
+                  placeholder="Chercher Dr..."
+                  value={medecinInput}
+                  onChange={(e) => { 
+                    setMedecinInput(e.target.value); 
+                    setShowMedecinList(true);
+                    if (formData.medecinId !== 0) {
+                      setFormData({...formData, medecinId: 0});
+                    }
+                  }}
+                  onFocus={() => setShowMedecinList(true)}
+                  style={{ paddingRight: formData.medecinId !== 0 ? '2.5rem' : '1rem' }}
+                  required
+                />
+                {formData.medecinId !== 0 && (
+                  <span style={{ 
+                    position: 'absolute', 
+                    right: '0.75rem', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    color: '#10b981',
+                    fontSize: '1.25rem',
+                    fontWeight: 'bold'
+                  }}>
+                    ✓
+                  </span>
+                )}
+              </div>
               {showMedecinList && medecinInput && medecinSuggestions.length > 0 && (
                 <ul className="custom-dropdown">
                   {medecinSuggestions.map(m => (
