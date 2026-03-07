@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/medecins")
 public class MedecinProxyController {
     private final RestTemplate restTemplate;
-    private final String medecinUrl="http://localhost:8081/api/medecins";
+    private final String medecinUrl="http://medecins-service:8081/api/medecins";
 
     public MedecinProxyController() {
         this.restTemplate = new RestTemplate();

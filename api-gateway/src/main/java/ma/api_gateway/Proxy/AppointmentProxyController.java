@@ -13,7 +13,7 @@ import java.util.List;
 public class AppointmentProxyController {
 
     private final RestTemplate restTemplate;
-    private final String appointmentServiceUrl = "http://localhost:8081/api/appointments";
+    private final String appointmentServiceUrl = "http://medecins-service:8081/api/appointments";
 
     public AppointmentProxyController() {
         this.restTemplate = new RestTemplate();

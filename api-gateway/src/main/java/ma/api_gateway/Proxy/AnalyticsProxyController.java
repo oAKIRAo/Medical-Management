@@ -16,8 +16,8 @@ public class AnalyticsProxyController {
 
     private final RestTemplate restTemplate;
 
-    private final String medecinAnalyticsUrl = "http://localhost:8081/api/analytics";
-    private final String patientAnalyticsUrl = "http://localhost:8082/api/analytics";
+    private final String medecinAnalyticsUrl = "http://medecins-service:8081/api/analytics";
+    private final String patientAnalyticsUrl = "http://patient-service:8082/api/analytics";
 
     public AnalyticsProxyController() {
         this.restTemplate = new RestTemplate();
