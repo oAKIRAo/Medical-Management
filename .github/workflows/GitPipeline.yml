@@ -19,21 +19,33 @@ jobs:
           distribution: 'temurin'
 
       - name: Test patient-service
-        run: cd patient-service && ./mvnw test
+        run: |
+          cd patient-service
+          chmod +x mvnw
+          ./mvnw test
 
       - name: Test medecins-service
-        run: cd medecins-service && ./mvnw test
+        run: |
+          cd medecins-service
+          chmod +x mvnw
+          ./mvnw test
 
       - name: Test api-gateway
-        run: cd api-gateway && ./mvnw test
+        run: |
+          cd api-gateway
+          chmod +x mvnw
+          ./mvnw test
 
       - name: Test Frontend
-        run: cd FRONTEND && npm install && npm run test
+        run: |
+          cd FRONTEND
+          npm install
+          npm run test
 
   # JOB 2 - Build et Push
   build-and-push:
     runs-on: ubuntu-latest
-    needs: test        # ← attend que les tests passent !
+    needs: test
 
     steps:
       - name: Checkout code
