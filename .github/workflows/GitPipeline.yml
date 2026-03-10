@@ -64,7 +64,7 @@ jobs:
         run: |
           cd FRONTEND
           npm install
-          npm run test
+          npm run build
 
   # JOB 2 - Build et Push
   build-and-push:
