@@ -5,8 +5,7 @@ COPY pom.xml .
 COPY src ./src
 COPY mvnw .
 COPY .mvn .mvn
-RUN ./mvnw package -DskipTests
-
+RUN chmod +x mvnw && ./mvnw package -DskipTests
 # STAGE 2 - Production
 FROM eclipse-temurin:17-jre-alpine
 LABEL authors="AKIRA"
