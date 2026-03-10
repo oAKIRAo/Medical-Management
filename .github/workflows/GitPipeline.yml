@@ -1,0 +1,73 @@
+name: GitPipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  # JOB 1 - Tests
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Test patient-service
+        run: cd patient-service && ./mvnw test
+
+      - name: Test medecins-service
+        run: cd medecins-service && ./mvnw test
+
+      - name: Test api-gateway
+        run: cd api-gateway && ./mvnw test
+
+      - name: Test Frontend
+        run: cd FRONTEND && npm install && npm run test
+
+  # JOB 2 - Build et Push
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: test        # ← attend que les tests passent !
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Registry
+        run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u oakirao --password-stdin
+
+      - name: Build and Push Config Server
+        run: |
+          docker build -t ghcr.io/oakirao/gestionmedicale-config-server:latest ./config-server
+          docker push ghcr.io/oakirao/gestionmedicale-config-server:latest
+
+      - name: Build and Push Eureka Server
+        run: |
+          docker build -t ghcr.io/oakirao/gestionmedicale-eureka-server:latest ./eureka-server
+          docker push ghcr.io/oakirao/gestionmedicale-eureka-server:latest
+
+      - name: Build and Push API Gateway
+        run: |
+          docker build -t ghcr.io/oakirao/gestionmedicale-api-gateway:latest ./api-gateway
+          docker push ghcr.io/oakirao/gestionmedicale-api-gateway:latest
+
+      - name: Build and Push Patient Service
+        run: |
+          docker build -t ghcr.io/oakirao/gestionmedicale-patient-service:latest ./patient-service
+          docker push ghcr.io/oakirao/gestionmedicale-patient-service:latest
+
+      - name: Build and Push Medecins Service
+        run: |
+          docker build -t ghcr.io/oakirao/gestionmedicale-medecins-service:latest ./medecins-service
+          docker push ghcr.io/oakirao/gestionmedicale-medecins-service:latest
+
+      - name: Build and Push Frontend
+        run: |
+          docker build -t ghcr.io/oakirao/gestionmedicale-frontend:latest ./FRONTEND
+          docker push ghcr.io/oakirao/gestionmedicale-frontend:latest
