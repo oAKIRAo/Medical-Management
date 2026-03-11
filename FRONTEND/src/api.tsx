@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://gestionmedicale-api-gateway-production.up.railway.app"; // URL pour gateway
+const  API_URL = "https://gestionmedicale-api-gateway-production.up.railway.app"; // URL pour gateway
 
 export const api = axios.create({
   baseURL: API_URL,
