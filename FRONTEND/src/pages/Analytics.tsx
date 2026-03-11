@@ -31,6 +31,7 @@ const Analytics: React.FC = () => {
 
   const username = sessionStorage.getItem('username') || '';
   const password = sessionStorage.getItem('password') || '';
+  const BASE_URL = "https://gestionmedicale-api-gateway-production.up.railway.app";
   
   const headers = useMemo(() => ({
     'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
@@ -49,8 +50,8 @@ const Analytics: React.FC = () => {
     const fetchData = async () => {
       try {
         const [cardsRes, chartRes] = await Promise.all([
-          fetch('http://localhost:8888/analytics/cards', { headers }),
-          fetch('http://localhost:8888/analytics/appointments-per-doctor', { headers })
+          fetch(`${BASE_URL}/analytics/cards`, { headers }),
+          fetch(`${BASE_URL}/analytics/appointments-per-doctor`, { headers })
         ]);
 
         if (cardsRes.ok && chartRes.ok) {

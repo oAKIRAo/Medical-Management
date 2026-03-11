@@ -33,7 +33,8 @@ const Tables: React.FC = () => {
 
   const username = sessionStorage.getItem('username') || '';
   const password = sessionStorage.getItem('password') || '';
-  
+  const BASE_URL = "https://gestionmedicale-api-gateway-production.up.railway.app";
+
   const headers = useMemo(() => ({
     'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
     'Content-Type': 'application/json',
@@ -91,12 +92,12 @@ const Tables: React.FC = () => {
   }, [medecinSearch]);
 
   const refreshPatients = useCallback(async () => {
-    const res = await fetch('http://localhost:8888/patients/', { headers });
+    const res = await fetch(`${BASE_URL}/patients/`, { headers });
     if (res.ok) setPatients(await res.json());
   }, [headers]);
 
   const refreshMedecins = useCallback(async () => {
-    const res = await fetch('http://localhost:8888/medecins/', { headers });
+    const res = await fetch(`${BASE_URL}/medecins/`, { headers });
     if (res.ok) setMedecins(await res.json());
   }, [headers]);
 
@@ -106,8 +107,8 @@ const Tables: React.FC = () => {
     const loadData = async () => {
       try {
         const [resP, resM] = await Promise.all([
-          fetch('http://localhost:8888/patients/', { headers }),
-          fetch('http://localhost:8888/medecins/', { headers })
+          fetch(`${BASE_URL}/patients/`, { headers }),
+          fetch(`${BASE_URL}/medecins/`, { headers })
         ]);
 
         if (!isMounted) return;
@@ -153,7 +154,7 @@ const Tables: React.FC = () => {
   const handleDelete = async (type: 'patients' | 'medecins', id: number) => {
     if (window.confirm('Voulez-vous vraiment supprimer cet élément ?')) {
       try {
-        const res = await fetch(`http://localhost:8888/${type}/delete/${id}`, { 
+        const res = await fetch(`${BASE_URL}/${type}/delete/${id}`, { 
           method: 'DELETE', 
           headers 
         });
@@ -193,7 +194,7 @@ const Tables: React.FC = () => {
       }
     }
 
-    const endpoint = `http://localhost:8888/${modalType}s/${isEditing ? `update/${currentId}` : 'add'}`;
+    const endpoint = `${BASE_URL}/${modalType}s/${isEditing ? `update/${currentId}` : 'add'}`;
     const method = isEditing ? 'PATCH' : 'POST';
 
     try {

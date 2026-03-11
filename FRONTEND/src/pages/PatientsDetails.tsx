@@ -43,6 +43,8 @@ const PatientDetails: React.FC = () => {
 
   const username = sessionStorage.getItem('username') || '';
   const password = sessionStorage.getItem('password') || '';
+  const BASE_URL = "https://gestionmedicale-api-gateway-production.up.railway.app";
+
   
   const headers = useMemo(() => ({
     'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
@@ -58,7 +60,7 @@ const PatientDetails: React.FC = () => {
 
   const fetchDossiers = useCallback(async () => {
     try {
-      const res = await fetch(`http://localhost:8888/patient/details/${id}/`, { headers });
+      const res = await fetch(`${BASE_URL}/patient/details/${id}/`, { headers });
       if (res.ok) {
         const data = await res.json();
         setDossiers(data);
@@ -73,7 +75,7 @@ const PatientDetails: React.FC = () => {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const res = await fetch(`http://localhost:8888/patients/${id}`, { headers });
+        const res = await fetch(`${BASE_URL}/patients/${id}`, { headers });
         if (res.ok) {
           setPatient(await res.json());
         }
@@ -111,8 +113,8 @@ const PatientDetails: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const endpoint = isEditing
-      ? `http://localhost:8888/patient/details/${id}/update/${currentDossierId}`
-      : `http://localhost:8888/patient/details/${id}/add`;
+      ? `${BASE_URL}/patient/details/${id}/update/${currentDossierId}`
+      : `${BASE_URL}/patient/details/${id}/add`;
     const method = isEditing ? 'PATCH' : 'POST';
 
     try {
@@ -136,7 +138,7 @@ const PatientDetails: React.FC = () => {
   const handleDelete = async (dossierId: number) => {
     if (window.confirm('Voulez-vous vraiment supprimer ce dossier médical ?')) {
       try {
-        await fetch(`http://localhost:8888/patient/details/${id}/delete/${dossierId}`, {
+        await fetch(`${BASE_URL}/patient/details/${id}/delete/${dossierId}`, {
           method: 'DELETE',
           headers,
         });

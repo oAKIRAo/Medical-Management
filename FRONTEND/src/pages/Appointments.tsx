@@ -41,6 +41,8 @@ const Appointments: React.FC = () => {
 
   const patientRef = useRef<HTMLDivElement>(null);
   const medecinRef = useRef<HTMLDivElement>(null);
+  const BASE_URL = "https://gestionmedicale-api-gateway-production.up.railway.app";
+
 
   const [formData, setFormData] = useState<Partial<AppointmentDTO>>({
     date: '',
@@ -74,9 +76,9 @@ const Appointments: React.FC = () => {
     setLoading(true);
     try {
       const [resApp, resPat, resMed] = await Promise.all([
-        fetch('http://localhost:8888/appointments/', { headers }),
-        fetch('http://localhost:8888/patients/', { headers }),
-        fetch('http://localhost:8888/medecins/', { headers })
+        fetch(`${BASE_URL}/appointments/`, { headers }),
+        fetch(`${BASE_URL}/patients/`, { headers }),
+        fetch(`${BASE_URL}/medecins/`, { headers })
       ]);
       if (resApp.status === 401) navigate('/login');
       if (resApp.ok) setAppointments(await resApp.json());
@@ -203,8 +205,8 @@ const Appointments: React.FC = () => {
     console.log("Données envoyées:", formData); // Pour déboguer
     
     const endpoint = isEditing 
-      ? `http://localhost:8888/appointments/update/${currentId}`
-      : `http://localhost:8888/appointments/create`;
+      ? `${BASE_URL}/appointments/update/${currentId}`
+      : `${BASE_URL}/appointments/create`;
     const method = isEditing ? 'PATCH' : 'POST';
 
     try {
@@ -233,7 +235,7 @@ const Appointments: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Supprimer ce rendez-vous ?')) {
       try {
-        await fetch(`http://localhost:8888/appointments/delete/${id}`, { method: 'DELETE', headers });
+        await fetch(`${BASE_URL}/appointments/delete/${id}`, { method: 'DELETE', headers });
         fetchData();
         setMessage('✅ Rendez-vous supprimé');
         setTimeout(() => setMessage(''), 3000);
