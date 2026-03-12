@@ -16,9 +16,10 @@ public class AnalyticsProxyController {
 
     private final RestTemplate restTemplate;
 
-    private final String medecinAnalyticsUrl = "http://medecins-service:8081/api/analytics";
-    private final String patientAnalyticsUrl = "http://patient-service:8082/api/analytics";
-
+    //private final String medecinAnalyticsUrl = "http://medecins-service:8081/api/analytics";
+    //private final String patientAnalyticsUrl = "http://patient-service:8082/api/analytics";
+    private final String medecinAnalyticsUrl = "http://gestionmedicale-medecins-service.railway.internal:8080/api/analytics";
+    private final String patientAnalyticsUrl = "http://gestionmedicale-patient-service.railway.internal:8080/api/analytics";
     public AnalyticsProxyController() {
         this.restTemplate = new RestTemplate();
         this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());

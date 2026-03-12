@@ -14,7 +14,8 @@ import java.util.List;
 public class DossierMedicalProxyController {
 
     private final RestTemplate restTemplate;
-    private final String dossierServiceUrl = "http://patient-service:8082/api/dossier-medical";
+    //private final String dossierServiceUrl = "http://patient-service:8082/api/dossier-medical";
+    private final String dossierServiceUrl = "http://gestionmedicale-patient-service.railway.internal:8080/api/dossier-medical";
 
     public DossierMedicalProxyController() {
         this.restTemplate = new RestTemplate();

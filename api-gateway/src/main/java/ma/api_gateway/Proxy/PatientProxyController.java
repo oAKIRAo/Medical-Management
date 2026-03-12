@@ -13,7 +13,9 @@ import java.util.List;
 public class PatientProxyController {
 
     private final RestTemplate restTemplate;
-    private final String patientServiceUrl = "http://patient-service:8082/api/patients";
+    //private final String patientServiceUrl = "http://patient-service:8082/api/patients";
+    private final String patientServiceUrl = "http://gestionmedicale-patient-service.railway.internal:8080/api/patients";
+
     public PatientProxyController() {
         this.restTemplate = new RestTemplate();
         //pour activer le support
